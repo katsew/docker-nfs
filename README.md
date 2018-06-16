@@ -1,6 +1,13 @@
 # docker-nfs
 
-Auto configuration cli for insert docker nfs driver config into `/etc/exports`.
+Auto configuration cli for insert docker nfs config.
+Command will do the following actions:
+
+1. Insert config (or create new) `/etc/exports`
+2. Insert config (or create new) `/etc/nfs.conf`
+3. Restart `nfsd` if at least one of the file appears above updates
+
+:zap: Use this command with `sudo` or your config file will accidentally update!
 
 ## Installation
 
@@ -25,6 +32,13 @@ $ cat /etc/exports
 "/path/to/your/docker/project" 192.168.33.10 -alldirs -mapall=[uid]:[gid]
 # END - docker-nfs [uid]:[gid]
 
+$ cat /etc/nfs.conf
+
+## BEGIN - docker-nfs
+nfs.server.mount.require_resv_port = 0
+## END - docker-nfs
+
+nfsd will be restarted
 ```
 
 ## License
