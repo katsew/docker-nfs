@@ -3,6 +3,8 @@ package exports
 import (
 	"fmt"
 	"strings"
+
+	"github.com/katsew/docker-nfs/pkg/common"
 )
 
 const (
@@ -89,7 +91,6 @@ func Parse(line string) (*Configuration, error) {
 		trimmed := strings.Trim(e, " ")
 		if i == 0 {
 			unwrapped := unwrapQuotes(trimmed)
-			fmt.Printf("%s", unwrapped)
 			conf.Path = unwrapped
 		}
 		if i == 1 {
@@ -100,12 +101,12 @@ func Parse(line string) (*Configuration, error) {
 		}
 		if isMapAllOption(trimmed) {
 			trimmed = strings.TrimPrefix(trimmed, "-mapall=")
-			splitted := strings.Split(trimmed, ":")
-			if len(splitted) != 2 {
-				panic("Length mismatched!")
+			splits := strings.Split(trimmed, ":")
+			if len(splits) != 2 {
+				return nil, common.ErrInvalidLength
 			}
-			conf.Uid = splitted[0]
-			conf.Gid = splitted[1]
+			conf.Uid = splits[0]
+			conf.Gid = splits[1]
 		}
 	}
 	return conf, nil

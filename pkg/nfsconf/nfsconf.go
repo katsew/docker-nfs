@@ -1,9 +1,10 @@
 package nfsconf
 
 import (
-	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/katsew/docker-nfs/pkg/common"
 )
 
 const (
@@ -45,13 +46,13 @@ func Parse(line string) (*Configuration, error) {
 		return &Configuration{Comment: line}, nil
 	}
 	trimmed := strings.Trim(line, " ")
-	splitted := strings.Split(trimmed, "=")
-	if len(splitted) != 2 {
-		return nil, errors.New("length mismatched")
+	splits := strings.Split(trimmed, "=")
+	if len(splits) != 2 {
+		return nil, common.ErrInvalidLength
 	}
 	return &Configuration{
-		ConfigKey:   strings.Trim(splitted[0], " "),
-		ConfigValue: strings.Trim(splitted[1], " "),
+		ConfigKey:   strings.Trim(splits[0], " "),
+		ConfigValue: strings.Trim(splits[1], " "),
 	}, nil
 }
 

@@ -7,8 +7,8 @@ import (
 	"github.com/katsew/docker-nfs/pkg/exports"
 )
 
-func NewCreateCommand(path string, addr string, uid string, gid string) func() {
-	return func() {
+func NewCreateCommand(path string, addr string, uid string, gid string) func() error {
+	return func() error {
 		begin := &exports.Configuration{Comment: fmt.Sprintf("# BEGIN - docker-nfs %s:%s", uid, gid)}
 		c := &exports.Configuration{
 			Path: path,
@@ -18,6 +18,7 @@ func NewCreateCommand(path string, addr string, uid string, gid string) func() {
 		}
 		end := &exports.Configuration{Comment: fmt.Sprintf("# END - docker-nfs %s:%s", uid, gid)}
 		out := exports.Exports{begin, c, end}
-		ioutil.WriteFile(exports.PathToExports, []byte(out.String()), 0644)
+		err := ioutil.WriteFile(exports.PathToExports, []byte(out.String()), 0644)
+		return err
 	}
 }

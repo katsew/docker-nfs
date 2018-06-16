@@ -6,11 +6,12 @@ import (
 	"io"
 	"os"
 
+	"github.com/katsew/docker-nfs/pkg/common"
 	"github.com/katsew/docker-nfs/pkg/nfsconf"
 )
 
-func NewAppendCommand() func() {
-	return func() {
+func NewAppendCommand() func() error {
+	return func() error {
 		f, err := os.OpenFile(nfsconf.PathToNfsConf, os.O_RDWR, 0644)
 		if err != nil {
 			panic(err)
@@ -25,10 +26,13 @@ func NewAppendCommand() func() {
 				break
 			}
 			if err != nil {
-				panic(err)
+				return err
 			}
 
 			conf, err := nfsconf.Parse(string(l))
+			if err != nil {
+				return err
+			}
 			exists = append(exists, conf)
 		}
 		begin := &nfsconf.Configuration{Comment: fmt.Sprintf("## BEGIN - docker-nfs")}
@@ -39,12 +43,16 @@ func NewAppendCommand() func() {
 		end := &nfsconf.Configuration{Comment: fmt.Sprintf("## END - docker-nfs")}
 		out := nfsconf.NfsConf{begin, c, end}
 		if exists.AlreadyExists(c) {
-			fmt.Printf("\nThis configuration already exists on current nfs.conf.")
-			return
+			return common.ConfigurationIsExists{
+				FilePath: "/etc/nfs.conf",
+				Config:   c.String(),
+				Err:      common.ErrConfigurationExist,
+			}
 		}
 		_, err = f.WriteString(out.String())
 		if err != nil {
-			panic(err)
+			return err
 		}
+		return nil
 	}
 }
