@@ -9,6 +9,8 @@ import (
 
 	"bufio"
 
+	"os/exec"
+
 	exportsCmd "github.com/katsew/docker-nfs/pkg/cmd/exports"
 	nfsConfCmd "github.com/katsew/docker-nfs/pkg/cmd/nfsconf"
 	"github.com/katsew/docker-nfs/pkg/common"
@@ -50,6 +52,7 @@ func main() {
 	}
 
 	var execute func() error
+	var successUpdateExports = false
 	if fi != nil {
 		execute = exportsCmd.NewAppendCommand(dir, address, uid, gid)
 	} else {
@@ -62,8 +65,11 @@ func main() {
 		} else {
 			log.Fatal(err)
 		}
+	} else {
+		successUpdateExports = true
 	}
 
+	var successUpdateNfsConf = false
 	fi, err = os.Stat(nfsconf.PathToNfsConf)
 	if err != nil && os.IsExist(err) {
 		log.Fatal(err)
@@ -80,5 +86,22 @@ func main() {
 		} else {
 			log.Fatal(err)
 		}
+	} else {
+		successUpdateNfsConf = true
 	}
+
+	if successUpdateExports || successUpdateNfsConf {
+		log.Print("success update config file, restart nfsd")
+		cmd := exec.Command("/bin/sh", "-c", "sudo nfsd restart")
+		err = cmd.Start()
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = cmd.Wait()
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Print("success restart nfsd")
+	}
+
 }
