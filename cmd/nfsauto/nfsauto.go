@@ -5,8 +5,10 @@ import (
 
 	"os/user"
 
-	"github.com/katsew/docker-nfs/pkg/cmd"
+	exportsCmd "github.com/katsew/docker-nfs/pkg/cmd/exports"
+	nfsConfCmd "github.com/katsew/docker-nfs/pkg/cmd/nfsconf"
 	"github.com/katsew/docker-nfs/pkg/exports"
+	"github.com/katsew/docker-nfs/pkg/nfsconf"
 )
 
 func main() {
@@ -36,9 +38,20 @@ func main() {
 	}
 	var execute func()
 	if fi != nil {
-		execute = cmd.NewAppendCommand(dir, address, uid, gid)
+		execute = exportsCmd.NewAppendCommand(dir, address, uid, gid)
 	} else {
-		execute = cmd.NewCreateCommand(dir, address, uid, gid)
+		execute = exportsCmd.NewCreateCommand(dir, address, uid, gid)
+	}
+	execute()
+
+	fi, err = os.Stat(nfsconf.PathToNfsConf)
+	if err != nil && os.IsExist(err) {
+		panic(err)
+	}
+	if fi != nil {
+		execute = nfsConfCmd.NewAppendCommand()
+	} else {
+		execute = nfsConfCmd.NewCreateCommand()
 	}
 	execute()
 }
