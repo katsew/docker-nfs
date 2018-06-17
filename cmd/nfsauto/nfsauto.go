@@ -11,6 +11,12 @@ import (
 
 	"os/exec"
 
+	"flag"
+
+	"fmt"
+	"strings"
+
+	volumeCmd "github.com/katsew/docker-nfs/pkg/cmd/docker/volume"
 	exportsCmd "github.com/katsew/docker-nfs/pkg/cmd/exports"
 	nfsConfCmd "github.com/katsew/docker-nfs/pkg/cmd/nfsconf"
 	"github.com/katsew/docker-nfs/pkg/common"
@@ -18,11 +24,49 @@ import (
 	"github.com/katsew/docker-nfs/pkg/nfsconf"
 )
 
-func main() {
+var (
+	addr              = flag.String("addr", "localhost", "address for /etc/exports")
+	force             = flag.Bool("f", false, "force execute")
+	version           = flag.Bool("v", false, "output current version of docker-nfs")
+	verboseLevelInfo  = flag.Bool("vv", false, "verbose output level with info")
+	verboseLevelDebug = flag.Bool("vvv", false, "verbose output level with debug")
+	cwd               string
+	volumeName        *string
+	Version           = "0.0.0"
+)
+
+func init() {
+
+	// Prepare flag default and parse
 	dir, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
+	cwd = dir
+	splits := strings.Split(dir, "/")
+	projectRoot := splits[len(splits)-1]
+	volumeName = flag.String("volume", fmt.Sprintf("%s_%s", "nfs_auto", projectRoot), "docker volume name")
+	flag.Parse()
+
+	// Initialize log configuration
+	if *verboseLevelDebug {
+		log.SetFlags(log.LstdFlags | log.Lshortfile)
+	} else if *verboseLevelInfo {
+		log.SetFlags(log.LstdFlags)
+	} else {
+		log.SetFlags(0)
+	}
+	log.SetPrefix("nfsauto | ")
+
+	if *version {
+		log.SetPrefix("nfsauto - ")
+		log.Printf("version %s", Version)
+		os.Exit(0)
+	}
+
+}
+
+func main() {
 
 	uid := os.Getenv("SUDO_UID")
 	gid := os.Getenv("SUDO_GID")
@@ -35,17 +79,16 @@ func main() {
 		uid = u.Uid
 		gid = u.Gid
 		log.Printf("uid:gid set to %s:%s, this may break your config!", uid, gid)
-		rd := bufio.NewReader(os.Stdin)
-		log.Printf("do you wish to continue? [Y/n]: ")
-		ans, _ := rd.ReadString('\n')
-		if ans != "Y\n" {
-			log.Fatal("answer is not Y, stop process")
+		if !*force {
+			rd := bufio.NewReader(os.Stdin)
+			log.Printf("do you wish to continue? [Y/n]: ")
+			ans, _ := rd.ReadString('\n')
+			if ans != "Y\n" {
+				log.Fatal("answer is not Y, stop process")
+			}
 		}
 	}
-	var address = "localhost"
-	if len(os.Args) > 1 {
-		address = os.Args[1]
-	}
+
 	fi, err := os.Stat(exports.PathToExports)
 	if err != nil && os.IsExist(err) {
 		log.Fatal(err)
@@ -54,9 +97,9 @@ func main() {
 	var execute func() error
 	var successUpdateExports = false
 	if fi != nil {
-		execute = exportsCmd.NewAppendCommand(dir, address, uid, gid)
+		execute = exportsCmd.NewAppendCommand(cwd, *addr, uid, gid)
 	} else {
-		execute = exportsCmd.NewCreateCommand(dir, address, uid, gid)
+		execute = exportsCmd.NewCreateCommand(cwd, *addr, uid, gid)
 	}
 	if err = execute(); err != nil {
 		if common.IsConfigurationExist(err) {
@@ -93,15 +136,27 @@ func main() {
 	if successUpdateExports || successUpdateNfsConf {
 		log.Print("success update config file, restart nfsd")
 		cmd := exec.Command("/bin/sh", "-c", "sudo nfsd restart")
-		err = cmd.Start()
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = cmd.Wait()
+		err = cmd.Run()
 		if err != nil {
 			log.Fatal(err)
 		}
 		log.Print("success restart nfsd")
+	}
+
+	if successUpdateExports {
+		execute = volumeCmd.NewDockerVolumeRmCommand(*volumeName)
+		if err := execute(); err != nil {
+			if !*force {
+				log.Fatal(err)
+			}
+			log.Printf("failed to rm existing volume %s, continue create one", *volumeName)
+		}
+
+		execute = volumeCmd.NewDockerVolumeCreateCommand(cwd, *volumeName)
+		if err := execute(); err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("success create volume %s in %s", *volumeName, cwd)
 	}
 
 }
