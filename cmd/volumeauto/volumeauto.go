@@ -15,6 +15,7 @@ import (
 
 var (
 	force      = flag.Bool("f", false, "force execute")
+	nfsOptions = flag.String("o", "", "nfs options for docker volume")
 	cwd        string
 	volumeName *string
 )
@@ -46,7 +47,7 @@ func main() {
 		log.Printf("failed to rm existing volume %s, continue create one", *volumeName)
 	}
 
-	execute = volumeCmd.NewDockerVolumeCreateCommand(cwd, *volumeName)
+	execute = volumeCmd.NewDockerVolumeCreateCommand(cwd, *volumeName, *nfsOptions)
 	if err := execute(); err != nil {
 		log.Fatal(err)
 	}

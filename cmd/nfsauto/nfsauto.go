@@ -30,6 +30,7 @@ var (
 	version           = flag.Bool("v", false, "output current version of docker-nfs")
 	verboseLevelInfo  = flag.Bool("vv", false, "verbose output level with info")
 	verboseLevelDebug = flag.Bool("vvv", false, "verbose output level with debug")
+	nfsOptions        = flag.String("o", "", "nfs options for docker volume")
 	cwd               string
 	volumeName        *string
 	Version           = "0.0.0"
@@ -144,7 +145,7 @@ func main() {
 	}
 
 	if successUpdateExports {
-		execute = volumeCmd.NewDockerVolumeCreateCommand(cwd, *volumeName)
+		execute = volumeCmd.NewDockerVolumeCreateCommand(cwd, *volumeName, *nfsOptions)
 		if err := execute(); err != nil {
 			log.Fatal(err)
 		}
