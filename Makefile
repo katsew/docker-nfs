@@ -1,5 +1,5 @@
-nfsautoVersion = 0.0.0
-volumeautoVersion = 0.0.0
+nfsautoVersion = 1.0.0
+volumeautoVersion = 1.0.0
 
 .PHONY: nfsauto
 nfsauto:
