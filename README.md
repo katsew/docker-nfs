@@ -6,6 +6,7 @@ Command will do the following actions:
 1. Insert config (or create new) `/etc/exports`
 2. Insert config (or create new) `/etc/nfs.conf`
 3. Restart `nfsd` if at least one of the file appears above updates
+4. Create docker volume with type nfs for current directory
 
 :zap: Use this command with `sudo` or your config file will accidentally update!
 
