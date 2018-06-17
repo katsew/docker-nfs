@@ -1,25 +1,28 @@
 # docker-nfs
 
-Auto configuration cli for insert docker nfs config.
+configuration automation tools for docker nfs.
+
+## nfsauto
+
+Auto configuration cli for native nfs configuration.
 Command will do the following actions:
 
 1. Insert config (or create new) `/etc/exports`
 2. Insert config (or create new) `/etc/nfs.conf`
 3. Restart `nfsd` if at least one of the file appears above updates
-4. Create docker volume with type nfs for current directory
 
 :zap: Use this command with `sudo` or your config file will accidentally update!
 
-## Installation
+### Installation
 
 ```bash
 $ go install github.com/katsew/docker-nfs/cmd/nfsauto
 ```
 
-## Execute
+### Execute
 
 ```bash
-$ sudo nfsauto -addr 192.168.33.10 -volume project_local
+$ sudo nfsauto -addr 192.168.33.10
 ```
 
 e.g.
@@ -41,6 +44,29 @@ nfs.server.mount.require_resv_port = 0
 
 nfsd will be restarted
 
+```
+
+## volumeauto
+
+Create docker volume with type nfs for current directory
+
+### Installation
+
+```bash
+$ go install github.com/katsew/docker-nfs/cmd/volumeauto
+```
+
+### Execute
+
+```bash
+$ volumeauto -name project_local
+```
+
+e.g.
+
+```
+
+$ volumeauto -name project_local
 $ docker volume inspect project_local
 
 [
@@ -52,15 +78,14 @@ $ docker volume inspect project_local
         "Name": "project_local",
         "Options": {
             "device": ":/path/to/your/docker/project",
-            "o": "addr=host.docker.internal,rw,vers=3,tcp,fsc,actimeo=2",
+            "o": "addr=host.docker.internal,rw",
             "type": "nfs"
         },
         "Scope": "local"
     }
 ]
-
 ```
 
-## License
+# License
 
 MIT
