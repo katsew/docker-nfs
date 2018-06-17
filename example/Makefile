@@ -2,12 +2,13 @@
 init:
 	go install github.com/katsew/docker-nfs/cmd/nfsauto
 	go install github.com/katsew/docker-nfs/cmd/volumeauto
-	cd public; sudo nfsauto -volume docker-nfs_example_public
+	sudo nfsauto
+	cd public; volumeauto -name docker-nfs_example_public
 
 # default volume option: addr=host.docker.internal,rw
 .PHONY: up
 up:
-	cd public; volumeauto -volume docker-nfs_example_public -f
+	cd public; volumeauto -name docker-nfs_example_public -f
 	docker-compose up -d
 	docker-compose ps
 	open http://localhost:9090
@@ -24,5 +25,5 @@ reload: halt up
 
 .PHONY: volume
 volume:
-	cd public; volumeauto -volume docker-nfs_example_public -f
+	cd public; volumeauto -name docker-nfs_example_public -f
 	docker inspect docker-nfs_example_public
