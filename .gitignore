@@ -67,3 +67,5 @@ fabric.properties
 .idea/httpRequests
 
 tmp/
+build/
+bin/
