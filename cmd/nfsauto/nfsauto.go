@@ -144,14 +144,6 @@ func main() {
 	}
 
 	if successUpdateExports {
-		execute = volumeCmd.NewDockerVolumeRmCommand(*volumeName)
-		if err := execute(); err != nil {
-			if !*force {
-				log.Fatal(err)
-			}
-			log.Printf("failed to rm existing volume %s, continue create one", *volumeName)
-		}
-
 		execute = volumeCmd.NewDockerVolumeCreateCommand(cwd, *volumeName)
 		if err := execute(); err != nil {
 			log.Fatal(err)
