@@ -18,7 +18,7 @@ $ go install github.com/katsew/docker-nfs/cmd/nfsauto
 ## Execute
 
 ```bash
-$ sudo nfsauto [address - default: localhost]
+$ sudo nfsauto -addr 192.168.33.10 -volume project_local
 ```
 
 e.g.
@@ -39,6 +39,25 @@ nfs.server.mount.require_resv_port = 0
 ## END - docker-nfs
 
 nfsd will be restarted
+
+$ docker volume inspect project_local
+
+[
+    {
+        "CreatedAt": "",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/var/lib/docker/volumes/project_local/_data",
+        "Name": "project_local",
+        "Options": {
+            "device": ":/path/to/your/docker/project",
+            "o": "addr=host.docker.internal,rw,vers=3,tcp,fsc,actimeo=2",
+            "type": "nfs"
+        },
+        "Scope": "local"
+    }
+]
+
 ```
 
 ## License
