@@ -1,8 +1,13 @@
-.PHONY: build
-build:
-	cd cmd/nfsauto; go build -ldflags "-s -X main.Version=0.0.0" -o ../../bin/nfsauto;
-	cd cmd/volumeauto; go build -o ../../bin/volumeauto;
+nfsautoVersion = 0.0.0
+volumeautoVersion = 0.0.0
 
-.PHONY: exec
-exec: build
-	cd cmd/nfsauto; sudo ./bin/nfsauto
+.PHONY: nfsauto
+nfsauto:
+	cd cmd/nfsauto; go build -ldflags "-s -X main.Version=$(nfsautoVersion)" -o ../../bin/nfsauto;
+
+.PHONY: volumeauto
+volumeauto:
+	cd cmd/volumeauto; go build -ldflags "-s -X main.Version=$(volumeautoVersion)" -o ../../bin/volumeauto;
+
+.PHONY: build
+build: nfsauto volumeauto

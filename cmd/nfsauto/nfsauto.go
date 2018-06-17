@@ -13,10 +13,6 @@ import (
 
 	"flag"
 
-	"fmt"
-	"strings"
-
-	volumeCmd "github.com/katsew/docker-nfs/pkg/cmd/docker/volume"
 	exportsCmd "github.com/katsew/docker-nfs/pkg/cmd/exports"
 	nfsConfCmd "github.com/katsew/docker-nfs/pkg/cmd/nfsconf"
 	"github.com/katsew/docker-nfs/pkg/common"
@@ -30,9 +26,7 @@ var (
 	version           = flag.Bool("v", false, "output current version of docker-nfs")
 	verboseLevelInfo  = flag.Bool("vv", false, "verbose output level with info")
 	verboseLevelDebug = flag.Bool("vvv", false, "verbose output level with debug")
-	nfsOptions        = flag.String("o", "", "nfs options for docker volume")
 	cwd               string
-	volumeName        *string
 	Version           = "0.0.0"
 )
 
@@ -44,9 +38,6 @@ func init() {
 		panic(err)
 	}
 	cwd = dir
-	splits := strings.Split(dir, "/")
-	projectRoot := splits[len(splits)-1]
-	volumeName = flag.String("volume", fmt.Sprintf("%s_%s", "nfs_auto", projectRoot), "docker volume name")
 	flag.Parse()
 
 	// Initialize log configuration
@@ -142,14 +133,6 @@ func main() {
 			log.Fatal(err)
 		}
 		log.Print("success restart nfsd")
-	}
-
-	if successUpdateExports {
-		execute = volumeCmd.NewDockerVolumeCreateCommand(cwd, *volumeName, *nfsOptions)
-		if err := execute(); err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("success create volume %s in %s", *volumeName, cwd)
 	}
 
 }
