@@ -1,5 +1,7 @@
 # docker-nfs
 
+[![CircleCI](https://circleci.com/gh/katsew/docker-nfs/tree/master.svg?style=svg)](https://circleci.com/gh/katsew/docker-nfs/tree/master)
+
 configuration automation tools for docker nfs.
 
 ## nfsauto
