@@ -16,7 +16,7 @@ Command will do the following actions:
 ### Installation
 
 ```bash
-$ go install github.com/katsew/docker-nfs/cmd/nfsauto
+$ go get github.com/katsew/docker-nfs/cmd/nfsauto
 ```
 
 ### Execute
@@ -53,7 +53,7 @@ Create docker volume with type nfs for current directory
 ### Installation
 
 ```bash
-$ go install github.com/katsew/docker-nfs/cmd/volumeauto
+$ go get github.com/katsew/docker-nfs/cmd/volumeauto
 ```
 
 ### Execute
