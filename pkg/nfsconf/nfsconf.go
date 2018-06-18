@@ -42,6 +42,9 @@ type Configuration struct {
 }
 
 func Parse(line string) (*Configuration, error) {
+	if isEmpty(line) {
+		return &Configuration{}, nil
+	}
 	if isComment(line) {
 		return &Configuration{Comment: line}, nil
 	}
@@ -56,6 +59,18 @@ func Parse(line string) (*Configuration, error) {
 	}, nil
 }
 
+func (c *Configuration) isComment() bool {
+	return c.Comment != "" &&
+		c.ConfigKey == "" &&
+		c.ConfigValue == ""
+}
+
+func (c *Configuration) isEmpty() bool {
+	return c.Comment == "" &&
+		c.ConfigKey == "" &&
+		c.ConfigValue == ""
+}
+
 func (c *Configuration) String() string {
 	if c.Comment != "" {
 		return c.Comment
@@ -65,4 +80,8 @@ func (c *Configuration) String() string {
 
 func isComment(line string) bool {
 	return strings.Index(line, "#") == 0
+}
+
+func isEmpty(line string) bool {
+	return len(line) == 0 || line == ""
 }

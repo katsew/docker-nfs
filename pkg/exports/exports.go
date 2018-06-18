@@ -75,13 +75,37 @@ type Configuration struct {
 }
 
 func (c *Configuration) String() string {
-	if c.Comment != "" {
+	if c.isComment() {
 		return c.Comment
+	}
+	if c.isEmpty() {
+		return ""
 	}
 	return fmt.Sprintf("\"%s\" %s -alldirs -mapall=%s:%s", c.Path, c.Addr, c.Uid, c.Gid)
 }
 
+func (c *Configuration) isComment() bool {
+	return c.Comment != "" &&
+		c.Gid == "" &&
+		c.Uid == "" &&
+		c.Addr == "" &&
+		c.Path == "" &&
+		c.OptAllDir == ""
+}
+
+func (c *Configuration) isEmpty() bool {
+	return c.Comment == "" &&
+		c.Gid == "" &&
+		c.Uid == "" &&
+		c.Addr == "" &&
+		c.Path == "" &&
+		c.OptAllDir == ""
+}
+
 func Parse(line string) (*Configuration, error) {
+	if isEmpty(line) {
+		return &Configuration{}, nil
+	}
 	if isComment(line) {
 		return &Configuration{Comment: line}, nil
 	}
@@ -112,9 +136,14 @@ func Parse(line string) (*Configuration, error) {
 	return conf, nil
 }
 
+func isEmpty(line string) bool {
+	return len(line) == 0 || line == ""
+}
+
 func isComment(line string) bool {
 	return strings.Index(line, "#") == 0
 }
+
 func isAllDirsOption(elem string) bool {
 	return strings.HasPrefix(elem, "-alldirs")
 }
