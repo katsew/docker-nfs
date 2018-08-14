@@ -4,7 +4,19 @@
 
 configuration automation tools for docker nfs.
 
-## nfsauto
+## Installation
+
+```bash
+$ go get github.com/katsew/docker-nfs
+```
+
+## Usage 
+
+### exports
+
+```bash
+$ sudo docker-nfs exports --addr 192.168.33.10
+```
 
 Auto configuration cli for native nfs configuration.
 Command will do the following actions:
@@ -15,27 +27,16 @@ Command will do the following actions:
 
 :zap: Use this command with `sudo` or your config file will accidentally update!
 
-### Installation
-
-```bash
-$ go get github.com/katsew/docker-nfs/cmd/nfsauto
-```
-
-### Execute
-
-```bash
-$ sudo nfsauto -addr 192.168.33.10
-```
 
 e.g.
 
 ```
 $ cd /path/to/your/docker/project
-$ sudo nfsauto 192.168.33.10
+$ sudo docker-nfs exports --addr 192.168.33.10
 $ cat /etc/exports
 
 # BEGIN - docker-nfs [uid]:[gid]
-"/path/to/your/docker/project" 192.168.33.10 -alldirs -mapall=[uid]:[gid]
+"/path/to/your/docker/project" 192.168.33.10 -rw -alldirs -mapall=[uid]:[gid]
 # END - docker-nfs [uid]:[gid]
 
 $ cat /etc/nfs.conf
@@ -48,27 +49,19 @@ nfsd will be restarted
 
 ```
 
-## volumeauto
+### create-volume
+
+```bash
+$ docker-nfs create-volume --name project_local
+```
 
 Create docker volume with type nfs for current directory
-
-### Installation
-
-```bash
-$ go get github.com/katsew/docker-nfs/cmd/volumeauto
-```
-
-### Execute
-
-```bash
-$ volumeauto -name project_local
-```
 
 e.g.
 
 ```
 
-$ volumeauto -name project_local
+$ docker-nfs create-volume --name project_local
 $ docker volume inspect project_local
 
 [
