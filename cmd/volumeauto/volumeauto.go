@@ -46,6 +46,9 @@ func init() {
 
 func main() {
 
+	log.Print("[warning] This command has been deprecated. use docker-nfs instead.")
+	log.Print("[hint] go get github.com/katsew/docker-nfs")
+
 	var execute func() error
 	execute = volumeCmd.NewDockerVolumeRmCommand(*name)
 	if err := execute(); err != nil {

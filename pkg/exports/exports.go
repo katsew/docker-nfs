@@ -71,6 +71,7 @@ type Configuration struct {
 	Uid       string
 	Gid       string
 	OptAllDir string
+	ReadOnly  bool
 	Comment   string
 }
 
@@ -81,7 +82,11 @@ func (c *Configuration) String() string {
 	if c.isEmpty() {
 		return ""
 	}
-	return fmt.Sprintf("\"%s\" %s -alldirs -mapall=%s:%s", c.Path, c.Addr, c.Uid, c.Gid)
+	if !c.ReadOnly {
+		return fmt.Sprintf("\"%s\" %s -rw -alldirs -mapall=%s:%s", c.Path, c.Addr, c.Uid, c.Gid)
+	} else {
+		return fmt.Sprintf("\"%s\" %s -alldirs -mapall=%s:%s", c.Path, c.Addr, c.Uid, c.Gid)
+	}
 }
 
 func (c *Configuration) isComment() bool {

@@ -23,6 +23,7 @@ import (
 var (
 	addr              = flag.String("addr", "localhost", "address for /etc/exports")
 	force             = flag.Bool("f", false, "force execute")
+	readonly          = flag.Bool("ro", false, "readonly mount")
 	version           = flag.Bool("v", false, "output current version of docker-nfs")
 	verboseLevelInfo  = flag.Bool("vv", false, "verbose output level with info")
 	verboseLevelDebug = flag.Bool("vvv", false, "verbose output level with debug")
@@ -60,6 +61,9 @@ func init() {
 
 func main() {
 
+	log.Print("[warning] This command has been deprecated. use docker-nfs instead.")
+	log.Print("[hint] go get github.com/katsew/docker-nfs")
+
 	uid := os.Getenv("SUDO_UID")
 	gid := os.Getenv("SUDO_GID")
 	if uid == "" || gid == "" {
@@ -89,9 +93,9 @@ func main() {
 	var execute func() error
 	var successUpdateExports = false
 	if fi != nil {
-		execute = exportsCmd.NewAppendCommand(cwd, *addr, uid, gid)
+		execute = exportsCmd.NewAppendCommand(cwd, *addr, uid, gid, *readonly)
 	} else {
-		execute = exportsCmd.NewCreateCommand(cwd, *addr, uid, gid)
+		execute = exportsCmd.NewCreateCommand(cwd, *addr, uid, gid, *readonly)
 	}
 	if err = execute(); err != nil {
 		if common.IsConfigurationExist(err) {

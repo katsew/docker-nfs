@@ -44,7 +44,7 @@ func NewAppendCommand() func() error {
 		out := nfsconf.NfsConf{begin, c, end}
 		if exists.AlreadyExists(c) {
 			return common.ConfigurationIsExists{
-				FilePath: "/etc/nfs.conf",
+				FilePath: nfsconf.PathToNfsConf,
 				Config:   c.String(),
 				Err:      common.ErrConfigurationExist,
 			}
