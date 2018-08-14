@@ -60,7 +60,7 @@ Create docker volume with type nfs for current directory
 e.g.
 
 ```
-
+$ cd /path/to/your/docker/volume/mountpoint
 $ docker-nfs create-volume --name project_local
 $ docker volume inspect project_local
 
@@ -72,7 +72,7 @@ $ docker volume inspect project_local
         "Mountpoint": "/var/lib/docker/volumes/project_local/_data",
         "Name": "project_local",
         "Options": {
-            "device": ":/path/to/your/docker/project",
+            "device": ":/path/to/your/docker/volume/mountpoint",
             "o": "addr=host.docker.internal,rw",
             "type": "nfs"
         },
