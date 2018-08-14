@@ -28,7 +28,7 @@ var (
 func init() {
 	ExportsCommand.Flags().BoolVarP(&forceExport, "force", "f", false, "Export address without confirmation")
 	ExportsCommand.Flags().BoolVarP(&readOnly, "read-only", "", false, "Export as read only mount")
-	ExportsCommand.Flags().StringVarP(&addr, "addr", "a", "", "Address to export")
+	ExportsCommand.Flags().StringVarP(&addr, "addr", "a", "localhost", "Address to export")
 }
 
 var ExportsCommand = cobra.Command{
