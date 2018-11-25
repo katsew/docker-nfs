@@ -24,7 +24,8 @@ func init() {
 }
 
 var CreateVolumeCommand = cobra.Command{
-	Use: "create-volume",
+	Use:   "create-volume",
+	Short: "Create docker volume for nfs mount.",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		dir, err := os.Getwd()

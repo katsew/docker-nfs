@@ -32,7 +32,8 @@ func init() {
 }
 
 var ExportsCommand = cobra.Command{
-	Use: "exports",
+	Use:   "exports",
+	Short: "Set nfs configuration into /etc/nfs.conf, /etc/exports and restarts nfs.",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		dir, err := os.Getwd()
